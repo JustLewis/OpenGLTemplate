@@ -10,7 +10,7 @@
 
 Window window;
 Shader shader;
-Mesh* mesh;
+Mesh mesh;
 
 const char* VertexShader = "../Template/Shaders/Basic2DShader.vert";
 const char* FragmentShader = "../Template/Shaders/Basic2DShader.frag";
@@ -36,8 +36,8 @@ int main()
 	shader.CreateFromFiles(VertexShader, FragmentShader);
 	shader.UseShader();
 
-	mesh = new Mesh();
-	mesh->CreateTriangle();
+	mesh = Mesh();
+	mesh.CreateTriangle();
 
 	while (!window.GetWindowShouldClose())
 	{
@@ -47,12 +47,9 @@ int main()
 
 		shader.SetUniform4F("ObjColour", 0.0f, 0.0f, 1.0f, 1.0f);
 
-		mesh->RenderMesh();
+		mesh.RenderMesh();
 
 		window.SwapBuffers();
 	}
-
-	delete mesh;
-	mesh = nullptr;
 
 }
