@@ -4,8 +4,6 @@
 #include<glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include <glm/glm.hpp>
-
 #include "../Template/Window.h"
 #include "../Template/Shader.h"
 #include "../Template/Mesh.h"
@@ -17,7 +15,7 @@ Mesh* mesh;
 const char* VertexShader = "../Template/Shaders/Basic2DShader.vert";
 const char* FragmentShader = "../Template/Shaders/Basic2DShader.frag";
 
-void GLAPIENTRY //From Kronos; Debugging function
+void GLAPIENTRY //From Kronos - Debugging function
 MessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
 {
 	fprintf(stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n\n",
