@@ -7,13 +7,19 @@
 #include "../Template/Window.h"
 #include "../Template/Shader.h"
 #include "../Template/Mesh.h"
+#include "../Template/MyMaths.h"
 
 Window window;
 Shader shader;
 Mesh mesh;
 
-const char* VertexShader = "../Template/Shaders/Basic2DShader.vert";
-const char* FragmentShader = "../Template/Shaders/Basic2DShader.frag";
+bool TwoDimensions = false;
+
+const char* VertexShader2D = "../Template/Shaders/Basic2DShader.vert";
+const char* FragmentShader2D = "../Template/Shaders/Basic2DShader.frag";
+
+const char* VertexShader3D = "../Template/Shaders/Basic3DShader.vert";
+const char* FragmentShader3D = "../Template/Shaders/Basic3DShader.frag";
 
 void GLAPIENTRY //From Kronos - Debugging function
 MessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
@@ -32,24 +38,62 @@ int main()
 	glEnable(GL_DEBUG_OUTPUT);
 	glEnable(GL_DEPTH_TEST);
 
-
-	shader.CreateFromFiles(VertexShader, FragmentShader);
-	shader.UseShader();
-
-	mesh = Mesh();
-	mesh.CreateTriangle();
-
-	while (!window.GetWindowShouldClose())
+	if (TwoDimensions)
 	{
-		glfwPollEvents();
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glClearColor(0.01f, 0.0f, 0.02f, 1.0f);
 
-		shader.SetUniform4F("ObjColour", 0.0f, 0.0f, 1.0f, 1.0f);
+		shader.CreateFromFiles(VertexShader2D, FragmentShader2D);
+		shader.UseShader();
 
-		mesh.RenderMesh();
+		mesh = Mesh();
+		mesh.CreateTriangle();
 
-		window.SwapBuffers();
+
+		while (!window.GetWindowShouldClose())
+		{
+			glfwPollEvents();
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glClearColor(0.01f, 0.0f, 0.02f, 1.0f);
+
+			shader.SetUniform4F("ObjColour", 0.0f, 0.0f, 1.0f, 1.0f);
+
+			mesh.RenderMesh();
+
+			window.SwapBuffers();
+		}
 	}
+	else
+	{
+		shader.CreateFromFiles(VertexShader3D, FragmentShader3D);
+		shader.UseShader();
 
+		Matrix4 ProjectionMatrix = SetProjectionMatrixB(45.0f, 1920.0f / 1080.0f, 1.0f, 100.0f);
+
+		Matrix4 ViewMatrix = Matrix4(MatrixType::Identity);
+		Matrix4 ModelMatrix = Matrix4(MatrixType::Identity);
+
+		ModelMatrix.Values.at(11) = -2.0f;
+
+		shader.SetUniformMatrix4F("Projection", ProjectionMatrix.Values,false);
+		shader.SetUniformMatrix4F("View", ViewMatrix.Values,false);
+		shader.SetUniformMatrix4F("Model", ModelMatrix.Values,true);
+
+
+		mesh = Mesh();
+		mesh.CreateTriangle();
+		//mesh.CreateProceduralSphere(5.0f,10,10);
+
+
+		while (!window.GetWindowShouldClose())
+		{
+			glfwPollEvents();
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glClearColor(0.01f, 0.0f, 0.02f, 1.0f);
+
+			shader.SetUniform4F("ObjColour", 0.0f, 0.0f, 1.0f, 1.0f);
+
+			mesh.RenderMesh();
+
+			window.SwapBuffers();
+		}
+	}
 }

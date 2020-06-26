@@ -2,9 +2,12 @@
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
+#include <vector>
+#include <glad/glad.h>
 #include <string>
 
-#include "glad/glad.h"
+//#include "glad/glad.h"
+
 class Shader
 {
 public:
@@ -25,6 +28,8 @@ public:
 	void SetUniform3F(const char* UniformString, float X, float Y, float z);
 	void setUniform1F(const char* UniformString, float x);
 
+	void SetUniformMatrix4F(const char* UniformString, std::vector<GLfloat> Matrixin, bool Transpose);
+
 protected:
 
 	//Addresses
@@ -35,7 +40,6 @@ protected:
 	
 };
 
-
 Shader::Shader()
 {
 	ShaderID = 0;
@@ -44,6 +48,19 @@ Shader::Shader()
 Shader::~Shader()
 {
 	ClearShader();
+}
+
+void Shader::SetUniformMatrix4F(const char* UniformString, std::vector<GLfloat> Matrixin, bool Transpose)
+{
+	GLuint a = 0;
+	glUniformMatrix4fv(a = glGetUniformLocation(ShaderID, UniformString), 1, Transpose, &(Matrixin[0]));
+	if (a == -1) {
+		printf("%s is %i \n", UniformString, a);
+	}
+	else
+	{
+		printf("%s is location %i\n", UniformString, a);
+	}
 }
 
 void Shader::SetUniform4F(const char* UniformString, float X, float Y, float Z,float W)
