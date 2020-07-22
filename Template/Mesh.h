@@ -41,10 +41,10 @@ Mesh::Mesh()
 void Mesh::CreateTriangle()
 {
 	GLfloat Verts[] =
-	{
-		-0.5f,0.0f,0.0f,0.0f,0.0f,
-		0.5f,0.0f,0.0f,1.0f,0.0f,
-		0.0f,0.5f,0.0f,0.5f,1.0f
+	{//  x    y    z		u    v
+		-0.5f,0.0f,0.0f,	0.0f,0.0f,
+		0.5f,0.0f,0.0f,		1.0f,0.0f,
+		0.0f,0.5f,0.0f,		0.5f,1.0f
 	};
 
 	GLuint Inds[] =
@@ -111,8 +111,8 @@ void Mesh::CreateMesh(GLfloat* Vertices, GLuint* Indices, GLuint NumberOfVerts, 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
-	//glDisableVertexAttribArray(0); //Does literally nothing it seems.
-	//glDisableVertexAttribArray(1); //Does literally nothing it seems.
+	//glDisableVertexAttribArray(0); //Does literally nothing it seems. (Because it's after the Vertex array object has been unbound idiot!)
+	//glDisableVertexAttribArray(1); //Does literally nothing it seems. (Because it's after the Vertex array object has been unbound idiot!)
 
 }
 

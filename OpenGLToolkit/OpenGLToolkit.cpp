@@ -3,11 +3,13 @@
 
 #include<glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp> //not sure we need this.
 
 #include "../Template/Window.h"
 #include "../Template/Shader.h"
 #include "../Template/Mesh.h"
-#include "../Template/MyMaths.h"
+
 
 Window window;
 Shader shader;
@@ -38,15 +40,14 @@ int main()
 	glEnable(GL_DEBUG_OUTPUT);
 	glEnable(GL_DEPTH_TEST);
 
-	if (TwoDimensions)
+	if (TwoDimensions)//Working in 2D
 	{
-
+		
 		shader.CreateFromFiles(VertexShader2D, FragmentShader2D);
 		shader.UseShader();
 
 		mesh = Mesh();
 		mesh.CreateTriangle();
-
 
 		while (!window.GetWindowShouldClose())
 		{
@@ -61,27 +62,22 @@ int main()
 			window.SwapBuffers();
 		}
 	}
-	else
+	else //working in 3D
 	{
 		shader.CreateFromFiles(VertexShader3D, FragmentShader3D);
 		shader.UseShader();
 
-		Matrix4 ProjectionMatrix = SetProjectionMatrixB(45.0f, 1920.0f / 1080.0f, 1.0f, 100.0f);
+		glm::mat4 ProjectionMatrix = glm::perspective(45.0f, 1920.0f / 1080.0f, 0.1f, 100.0f);
 
-		Matrix4 ViewMatrix = Matrix4(MatrixType::Identity);
-		Matrix4 ModelMatrix = Matrix4(MatrixType::Identity);
+		glm::mat4 ViewMatrix = glm::mat4(1.0f);
+		glm::mat4 ModelMatrix = glm::translate(glm::mat4(1.0f),glm::vec3(0.0f,0.0f,-2.0f));
 
-		ModelMatrix.Values.at(11) = -2.0f;
-
-		shader.SetUniformMatrix4F("Projection", ProjectionMatrix.Values,false);
-		shader.SetUniformMatrix4F("View", ViewMatrix.Values,false);
-		shader.SetUniformMatrix4F("Model", ModelMatrix.Values,true);
-
+		shader.SetUniformMatrix4F("Projection", ProjectionMatrix,false);
+		shader.SetUniformMatrix4F("View", ViewMatrix,false);
+		shader.SetUniformMatrix4F("Model", ModelMatrix,false);
 
 		mesh = Mesh();
 		mesh.CreateTriangle();
-		//mesh.CreateProceduralSphere(5.0f,10,10);
-
 
 		while (!window.GetWindowShouldClose())
 		{

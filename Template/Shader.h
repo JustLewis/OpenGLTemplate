@@ -3,10 +3,9 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <glad/glad.h>
 #include <string>
-
-//#include "glad/glad.h"
+#include <glad/glad.h>
+#include <glm/gtc/type_ptr.hpp>
 
 class Shader
 {
@@ -29,6 +28,7 @@ public:
 	void setUniform1F(const char* UniformString, float x);
 
 	void SetUniformMatrix4F(const char* UniformString, std::vector<GLfloat> Matrixin, bool Transpose);
+	void SetUniformMatrix4F(const char* UniformString, glm::mat4 &Matrixin, bool Transpose);
 
 protected:
 
@@ -57,9 +57,15 @@ void Shader::SetUniformMatrix4F(const char* UniformString, std::vector<GLfloat> 
 	if (a == -1) {
 		printf("%s is %i \n", UniformString, a);
 	}
-	else
+}
+
+void Shader::SetUniformMatrix4F(const char* UniformString, glm::mat4 &Matrixin, bool Transpose)
+{
+	GLuint a = 0;
+	glUniformMatrix4fv(a = glGetUniformLocation(ShaderID, UniformString), 1, Transpose, glm::value_ptr(Matrixin));
+	if (a == -1)
 	{
-		printf("%s is location %i\n", UniformString, a);
+		printf("%s is %i \n", UniformString, a);
 	}
 }
 

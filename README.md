@@ -7,6 +7,7 @@ Additional Directories
 add this
 $(SolutionDir)ThirdParty/GLAD/include
 $(SolutionDir)ThirdParty/GLFW/include
+$(SolutionDir)ThirdParty/GLM
 
 Go to pre processor definitations
 

@@ -139,13 +139,11 @@ Created from portsmouth-ebooks on 2019-10-14 11:16:27.
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
-
-
 	glViewport(0, 0, BufferWidth, BufferHeight);
-
 
 	return 0;
 }
+
 
 GLfloat Window::GetMouseXChange()
 {
