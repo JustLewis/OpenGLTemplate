@@ -10,40 +10,31 @@
 #include "../Template/Shader.h"
 #include "../Template/Mesh.h"
 
-
 Window window;
 Shader shader;
 Mesh mesh;
 
 bool TwoDimensions = false;
 
-const char* VertexShader2D = "../Template/Shaders/Basic2DShader.vert";
-const char* FragmentShader2D = "../Template/Shaders/Basic2DShader.frag";
-
-const char* VertexShader3D = "../Template/Shaders/Basic3DShader.vert";
-const char* FragmentShader3D = "../Template/Shaders/Basic3DShader.frag";
-
-void GLAPIENTRY //From Kronos - Debugging function
-MessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
-{
-	fprintf(stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n\n",
-		(type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
-		type, severity, message);
-}
+//From Kronos - Debugging function protype. (Full function below main)
+void GLAPIENTRY MessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam);
 
 int main()
 {
 	window = Window(1920, 1080);
 	window.Initialise();
 
+	//Debug stuff.
+	//Uncomment if you want some debugging information
 	glDebugMessageCallback(MessageCallback, 0);
-	glEnable(GL_DEBUG_OUTPUT);
+	//glEnable(GL_DEBUG_OUTPUT);
+	
+	
 	glEnable(GL_DEPTH_TEST);
 
 	if (TwoDimensions)//Working in 2D
 	{
-		
-		shader.CreateFromFiles(VertexShader2D, FragmentShader2D);
+		shader.CreateFromFiles("../Template/Shaders/Basic2DShader.vert", "../Template/Shaders/Basic2DShader.frag");
 		shader.UseShader();
 
 		mesh = Mesh();
@@ -64,11 +55,10 @@ int main()
 	}
 	else //working in 3D
 	{
-		shader.CreateFromFiles(VertexShader3D, FragmentShader3D);
+		shader.CreateFromFiles("../Template/Shaders/Basic3DShader.vert", "../Template/Shaders/Basic3DShader.frag");
 		shader.UseShader();
 
 		glm::mat4 ProjectionMatrix = glm::perspective(45.0f, 1920.0f / 1080.0f, 0.1f, 100.0f);
-
 		glm::mat4 ViewMatrix = glm::mat4(1.0f);
 		glm::mat4 ModelMatrix = glm::translate(glm::mat4(1.0f),glm::vec3(0.0f,0.0f,-2.0f));
 
@@ -92,4 +82,17 @@ int main()
 			window.SwapBuffers();
 		}
 	}
+}
+
+void GLAPIENTRY MessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
+{
+	//main stuff we want to know.
+	std::cout << "GL CALLBACK: " << (type == GL_DEBUG_TYPE_ERROR ? "**ERROR**" : "") << ". Message = " << message << std::endl;
+	//additional information included in the message.
+	std::cout << "(Additional information) \ntype = 0x" << type << ". severity = 0x" << severity << ".\n\n";
+
+	//I don't like fprintf as it can corrupt. This does the same as above, it's just the way Kronos wrote it.
+	//fprintf(stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n\n",
+	//(type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
+	//type, severity, message);
 }
