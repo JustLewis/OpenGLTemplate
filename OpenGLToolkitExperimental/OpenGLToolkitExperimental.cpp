@@ -6,7 +6,7 @@
 
 #include "../Template/Window.h"
 #include "../Template/Shader.h"
-#include "../Template/Experimental/ComputeParticles.h"
+#include "ComputeParticles.h"
 
 Window window;
 Shader shader;
@@ -28,7 +28,7 @@ int main()
 	glBlendColor(0.4, 0.4, 0.0, 0.3);
 
 	Shader CompShader;
-	CompShader.CreateFromFiles("../Template/Experimental/ParticleComputeShader.glsl");
+	CompShader.CreateFromFiles("Shader/ParticleComputeShader.glsl");
 	CompShader.UseShader();
 
 	ComputeParticles Party;
@@ -39,14 +39,13 @@ int main()
 	glPointSize(1);
 	//glEnable(GL_DEPTH_TEST);
 	
-	shader.CreateFromFiles("../Template/Experimental/2DShader.vert", "../Template/Experimental/2DShader.frag");
+	shader.CreateFromFiles("Shader/2DShader.vert", "Shader/2DShader.frag");
 
 	while (!window.GetWindowShouldClose())
 	{
 		glfwPollEvents();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(0.01f, 0.0f, 0.02f, 1.0f);
-
 
 		Posx += window.GetMouseXChange() * 0.001;
 		Posy += window.GetMouseYChange() * 0.001;
