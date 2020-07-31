@@ -1,17 +1,20 @@
+#include <vector>
+#include <random>
 #include <glad/glad.h>
-#include "../Template/Particles.h"
 
-
-class ComputeParticles : public Particles
+class ComputeParticles
 {
 
 public:
-	void Render() override;
-	void CreateParticles(GLuint NumberOfParticlesIn) override;
+	void Render();
+	void CreateParticles(GLuint NumberOfParticlesIn);
 	void Dispatch();
 
 private:
 	GLuint ParticleDirectionsBuffer;
+	GLuint VertexArrayObject;
+	GLuint ParticlePositionBufferObject;
+	GLuint NumberOfParticles;
 };
 
 void ComputeParticles::Render()
