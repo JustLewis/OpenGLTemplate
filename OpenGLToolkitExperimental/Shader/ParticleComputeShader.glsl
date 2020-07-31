@@ -11,7 +11,7 @@ layout(binding = 1) buffer Vel {
 uniform vec2 MouseDirection;
 uniform vec2 MousePosition;
 uniform float DeltaT = 0.0025;
-uniform float MaxDist = 1;
+uniform float MaxDist = 10;
 
 void main()
 {
@@ -19,7 +19,11 @@ void main()
     vec2 ParticlePos = Position[ID];
 
     vec2 Direction = MousePosition - ParticlePos;
-    vec2 DirectionalForce = (1000 / length(Direction)) * normalize(Direction); //if close enough, will pull towards mouse, if not no force.
+    vec2 DirectionalForce = (2000 / length(Direction)) * normalize(Direction); //if close enough, will pull towards mouse, if not no force.
+    Direction = -MousePosition - ParticlePos;
+
+    DirectionalForce += (2000 / length(Direction)) * normalize(Direction);
+
     if (length(Direction) > MaxDist)
     {
         // do nothing
