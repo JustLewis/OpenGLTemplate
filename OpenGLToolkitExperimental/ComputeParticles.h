@@ -1,5 +1,5 @@
 #include <glad/glad.h>
-#include "../Particles.h"
+#include "../Template/Particles.h"
 
 
 class ComputeParticles : public Particles
