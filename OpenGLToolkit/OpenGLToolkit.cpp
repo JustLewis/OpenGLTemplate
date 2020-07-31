@@ -14,7 +14,7 @@ Window window;
 Shader shader;
 Mesh mesh;
 
-bool TwoDimensions = false;
+bool TwoDimensions = true;
 
 //From Kronos - Debugging function protype. (Full function below main)
 void GLAPIENTRY MessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam);
@@ -22,20 +22,21 @@ void GLAPIENTRY MessageCallback(GLenum source, GLenum type, GLuint id, GLenum se
 int main()
 {
 	window = Window(1920, 1080);
+	//window = Window(1920*2, 1080*2);
 	window.Initialise();
 
 	//Debug stuff.
-	//Uncomment if you want some debugging information
 	glDebugMessageCallback(MessageCallback, 0);
-	//glEnable(GL_DEBUG_OUTPUT);
-	
-	
+	//glEnable(GL_DEBUG_OUTPUT); //Uncomment if you want some debugging information
+
+	glPointSize(1);
+
 	glEnable(GL_DEPTH_TEST);
 
 	if (TwoDimensions)//Working in 2D
 	{
-		shader.CreateFromFiles("../Template/Shaders/Basic2DShader.vert", "../Template/Shaders/Basic2DShader.frag");
-		shader.UseShader();
+		shader.CreateFromFiles("../Template/Experimental/2DShader.vert", "../Template/Experimental/2DShader.frag");
+
 
 		mesh = Mesh();
 		mesh.CreateTriangle();
@@ -46,7 +47,8 @@ int main()
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			glClearColor(0.01f, 0.0f, 0.02f, 1.0f);
 
-			shader.SetUniform4F("ObjColour", 0.0f, 0.0f, 1.0f, 1.0f);
+			shader.UseShader();
+			shader.SetUniform4F("ObjColour", 0.0f,0.0f, 1.0f, 1.0f);
 
 			mesh.RenderMesh();
 
@@ -91,8 +93,4 @@ void GLAPIENTRY MessageCallback(GLenum source, GLenum type, GLuint id, GLenum se
 	//additional information included in the message.
 	std::cout << "(Additional information) \ntype = 0x" << type << ". severity = 0x" << severity << ".\n\n";
 
-	//I don't like fprintf as it can corrupt. This does the same as above, it's just the way Kronos wrote it.
-	//fprintf(stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n\n",
-	//(type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
-	//type, severity, message);
 }

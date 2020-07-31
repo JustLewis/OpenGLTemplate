@@ -8,11 +8,12 @@ class Particles
 {
 public:
 
-	void CreateParticles(GLuint NumberOfParticlesIn);
+	virtual void CreateParticles(GLuint NumberOfParticlesIn);
 
-	void Render();
+	virtual void Render();
 
-private:
+protected:
+
 	GLuint VertexArrayObject;
 	GLuint ParticlePositionBufferObject;
 	GLuint NumberOfParticles;
@@ -78,6 +79,6 @@ void Particles::CreateParticles(GLuint NumberOfParticlesIn)
 void Particles::Render()
 {
 	glBindVertexArray(VertexArrayObject);
-	glDrawArrays(GL_POINTS, 0, 1000);
+	glDrawArrays(GL_POINTS, 0, NumberOfParticles);
 	glBindVertexArray(0);
 }

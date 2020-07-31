@@ -14,9 +14,12 @@ public:
 	~Shader();
 
 	void CreateFromFiles(const char* VertexShaderLoc, const char* FragmentShaderLoc);
+	
+	//Comp shader experimental
+	void CreateFromFiles(const char* CompShaderLoc);
 	void CreateFromString(const char* VertexString, const char* FragmentString);
 
-	GLuint UseShader() { glUseProgram(ShaderID); return ShaderID; }
+	GLuint UseShader() { glUseProgram(ShaderID); return ShaderID;}
 	GLuint GetShaderID() { return ShaderID; }
 	void ClearShader();
 
@@ -37,6 +40,7 @@ protected:
 
 	std::string ReadFile(const char* FileLocation);
 	void CompileShaders(const char* VertexCode, const char*  FragmentCode);
+	void CompileShader(const char* CompCode);
 	
 };
 
@@ -76,7 +80,12 @@ void Shader::SetUniform4F(const char* UniformString, float X, float Y, float Z,f
 
 void Shader::SetUniform2F(const char* UniformString, float X, float Y)
 {
-	glUniform2f(glGetUniformLocation(ShaderID, UniformString),X, Y);
+	GLuint a = 0;
+	glUniform2f(a = glGetUniformLocation(ShaderID, UniformString),X, Y);
+	if (a == -1)
+	{
+		printf("%s is %i\n", UniformString, a);
+	}
 }
 
 void Shader::SetUniform3F(const char* UniformString, float X, float Y, float z)
@@ -98,6 +107,15 @@ void Shader::CreateFromFiles(const char* VertexShaderLoc, const char* FragmentSh
 	const char* FragmentCode = FragmentString.c_str();
 
 	CompileShaders(VertexCode, FragmentCode);
+}
+
+void Shader::CreateFromFiles(const char* CompShaderLoc)
+{
+	std::string CompString = ReadFile(CompShaderLoc);
+
+	const char* CompCode = CompString.c_str();
+
+	CompileShader(CompCode);
 }
 
 void Shader::CreateFromString(const char* VertexString, const char* FragmentString)
@@ -142,6 +160,54 @@ GLuint Shader::GetUniformLocation(const char* UniformVar)
 	GLuint UniformVarLoc = glGetUniformLocation(ShaderID, UniformVar);
 	//printf("Checking %s Location: %u\n", UniformVar, (unsigned int)UniformVarLoc); //Debug
 	return glGetUniformLocation(ShaderID, UniformVar);
+}
+void Shader::CompileShader(const char* CompCode)
+{
+	ShaderID = glCreateProgram();
+
+	if (!ShaderID)
+	{
+		printf("Failed to create shader");
+		return;
+	}
+
+	GLuint CompShader = glCreateShader(GL_COMPUTE_SHADER);
+
+	if (0 == CompShader)
+	{
+		printf("Failed to initalise Compute shader");
+		return;
+	}
+
+	glShaderSource(CompShader, 1, &CompCode, NULL);
+	glCompileShader(CompShader);
+
+	GLint result;
+	char Log[512];
+	glGetShaderiv(CompShader, GL_COMPILE_STATUS, &result);
+
+	if (result == GL_FALSE)
+	{
+
+		glGetShaderInfoLog(CompShader, 512, NULL, Log);
+		printf("Failed to compile Compute shader: %s\n", Log);
+		return;
+	}
+
+	glCompileShader(CompShader);
+
+	glAttachShader(ShaderID, CompShader);
+	glLinkProgram(ShaderID);
+
+	glGetShaderiv(ShaderID, GL_LINK_STATUS, &result);
+	if (result == GL_FALSE)
+	{
+		glGetShaderInfoLog(ShaderID, 512, NULL, Log);
+		printf("Failed to attach shaders: %s\n", Log);
+		return;
+	}
+
+	//glDeleteShader(CompShader);
 }
 
 void Shader::CompileShaders(const char* VertexCode, const char* FragmentCode)
