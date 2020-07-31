@@ -35,7 +35,7 @@ int main()
 
 	if (TwoDimensions)//Working in 2D
 	{
-		shader.CreateFromFiles("../Template/Experimental/2DShader.vert", "../Template/Experimental/2DShader.frag");
+		shader.CreateFromFiles("../Template/Shaders/Basic2DShader.vert", "../Template/Shaders/Basic2DShader.frag");
 
 
 		mesh = Mesh();
