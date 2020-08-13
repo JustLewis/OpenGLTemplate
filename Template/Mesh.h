@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 #include <stdio.h>
 #include <tgmath.h>
 #include <vector>
@@ -21,7 +22,7 @@ public:
 	virtual void RenderPoints();
 
 protected:
-	GLuint VAO, VBO, IBO;
+	GLuint VAO;
 	GLuint NumberOfIndices;
 
 private:
@@ -33,8 +34,6 @@ private:
 Mesh::Mesh()
 {
 	VAO = 0;
-	VBO = 0;
-	IBO = 0;
 	NumberOfIndices = 0;
 }
 
@@ -62,17 +61,7 @@ void Mesh::ClearMesh()
 		glDeleteVertexArrays(1, &VAO);
 		VAO = 0;
 	}
-	if (VBO != 0)
-	{
-		glDeleteBuffers(1, &VBO);
-		VBO = 0;
-	}
 
-	if (IBO != 0)
-	{
-		glDeleteBuffers(1, &IBO);
-		IBO = 0;
-	}
 	Verts.clear();
 	Inds.clear();
 }
@@ -82,9 +71,11 @@ void Mesh::CreateMesh(GLfloat* Vertices, GLuint* Indices, GLuint NumberOfVerts, 
 
 	NumberOfIndices = NumberOfIndicesIn;
 	glGenVertexArrays(1, &VAO);
+	GLuint VBO;
+	GLuint IBO;
+	
 	glGenBuffers(1, &VBO);
 	glGenBuffers(1, &IBO);
-
 
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -106,14 +97,12 @@ void Mesh::CreateMesh(GLfloat* Vertices, GLuint* Indices, GLuint NumberOfVerts, 
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertices[0]) * 5, (void*)(sizeof(Vertices[0]) * 3));
 	glEnableVertexAttribArray(1);
 
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);			//Even though the VAO is no longer active, These buffers still need to be unbound as they are still active.
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);	//Even though the VAO is no longer active, These buffers still need to be unbound as they are still active.
 
-	//glDisableVertexAttribArray(0); //Does literally nothing it seems. (Because it's after the Vertex array object has been unbound idiot!)
-	//glDisableVertexAttribArray(1); //Does literally nothing it seems. (Because it's after the Vertex array object has been unbound idiot!)
-
+	glDeleteBuffers(1, &VBO);
+	glDeleteBuffers(1, &IBO);
 }
 
 void Mesh::CreateProceduralSphere(GLfloat RadiusIn, GLuint HfacesIn, GLuint VfacesIn)
@@ -204,11 +193,8 @@ void Mesh::RecreateSphere(GLfloat RadiusIn, GLuint HFacesIn, GLuint VFacesIn)
 void Mesh::RenderMesh()
 {
 	glBindVertexArray(VAO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
 	glDrawElements(GL_TRIANGLES, NumberOfIndices, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
 }
 
 void Mesh::RenderPoints()

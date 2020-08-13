@@ -11,9 +11,9 @@ public:
 	void Dispatch();
 
 private:
-	GLuint ParticleDirectionsBuffer;
+	//GLuint ParticleDirectionsBuffer;
 	GLuint VertexArrayObject;
-	GLuint ParticlePositionBufferObject;
+	//GLuint ParticlePositionBufferObject;
 	GLuint NumberOfParticles;
 };
 
@@ -62,6 +62,9 @@ void ComputeParticles::CreateParticles(GLuint NumberOfParticlesIn)
 
 	}
 
+	GLuint ParticlePositionBufferObject;
+	GLuint ParticleDirectionsBuffer;
+
 	glGenVertexArrays(1, &VertexArrayObject);
 	glBindVertexArray(VertexArrayObject);
 
@@ -92,6 +95,10 @@ void ComputeParticles::CreateParticles(GLuint NumberOfParticlesIn)
 	glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(2);*/
 
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 	glBindVertexArray(0);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+	//glDeleteBuffers(1, &ParticleDirectionsBuffer);
+	//glDeleteBuffers(1, &ParticlePositionBufferObject);
+
 }

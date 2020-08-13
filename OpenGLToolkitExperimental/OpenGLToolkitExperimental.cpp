@@ -28,7 +28,7 @@ int main()
 	glBlendColor(0.4, 0.4, 0.0, 0.3);
 
 	Shader CompShader;
-	CompShader.CreateFromFiles("Shader/ParticleComputeShader.glsl");
+	CompShader.CreateComputeShaderFromFile("Shader/ParticleComputeShader.glsl");
 	CompShader.UseShader();
 
 	ComputeParticles Party;

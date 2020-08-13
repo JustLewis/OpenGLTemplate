@@ -10,6 +10,7 @@
 #include "../Template/Shader.h"
 #include "../Template/Mesh.h"
 
+
 Window window;
 Shader shader;
 Mesh mesh;
@@ -25,13 +26,12 @@ int main()
 	//window = Window(1920*2, 1080*2);
 	window.Initialise();
 
+	glPointSize(1);
+	glEnable(GL_DEPTH_TEST);
+
 	//Debug stuff.
 	glDebugMessageCallback(MessageCallback, 0);
 	//glEnable(GL_DEBUG_OUTPUT); //Uncomment if you want some debugging information
-
-	glPointSize(1);
-
-	glEnable(GL_DEPTH_TEST);
 
 	if (TwoDimensions)//Working in 2D
 	{
@@ -54,6 +54,7 @@ int main()
 
 			window.SwapBuffers();
 		}
+		
 	}
 	else //working in 3D
 	{

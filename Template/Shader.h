@@ -7,6 +7,8 @@
 #include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
 
+#pragma region Shader Class
+
 class Shader
 {
 public:
@@ -14,32 +16,31 @@ public:
 	~Shader();
 
 	void CreateFromFiles(const char* VertexShaderLoc, const char* FragmentShaderLoc);
-	
-	//Comp shader experimental
-	void CreateFromFiles(const char* CompShaderLoc);
-	void CreateFromString(const char* VertexString, const char* FragmentString);
 
 	GLuint UseShader() { glUseProgram(ShaderID); return ShaderID;}
 	GLuint GetShaderID() { return ShaderID; }
 	void ClearShader();
 
 	GLuint GetUniformLocation(const char* UniformVar);
-	
-	void SetUniform4F(const char* UniformString, float X, float Y, float Z,float W);
+
+	void setUniform1F(const char* UniformString, float x);
 	void SetUniform2F(const char* UniformString, float X, float Y);
 	void SetUniform3F(const char* UniformString, float X, float Y, float z);
-	void setUniform1F(const char* UniformString, float x);
+	void SetUniform4F(const char* UniformString, float X, float Y, float Z, float W);
 
 	void SetUniformMatrix4F(const char* UniformString, std::vector<GLfloat> Matrixin, bool Transpose);
 	void SetUniformMatrix4F(const char* UniformString, glm::mat4 &Matrixin, bool Transpose);
 
-protected:
+	//Comp shader experimental
+	void CreateComputeShaderFromFile(const char* CompShaderLoc);
 
-	//Addresses
+private:
 	GLuint ShaderID;
 
 	std::string ReadFile(const char* FileLocation);
 	void CompileShaders(const char* VertexCode, const char*  FragmentCode);
+	
+	//Comp shader experimental
 	void CompileShader(const char* CompCode);
 	
 };
@@ -53,50 +54,9 @@ Shader::~Shader()
 {
 	ClearShader();
 }
+#pragma endregion
 
-void Shader::SetUniformMatrix4F(const char* UniformString, std::vector<GLfloat> Matrixin, bool Transpose)
-{
-	GLuint a = 0;
-	glUniformMatrix4fv(a = glGetUniformLocation(ShaderID, UniformString), 1, Transpose, &(Matrixin[0]));
-	if (a == -1) {
-		printf("%s is %i \n", UniformString, a);
-	}
-}
-
-void Shader::SetUniformMatrix4F(const char* UniformString, glm::mat4 &Matrixin, bool Transpose)
-{
-	GLuint a = 0;
-	glUniformMatrix4fv(a = glGetUniformLocation(ShaderID, UniformString), 1, Transpose, glm::value_ptr(Matrixin));
-	if (a == -1)
-	{
-		printf("%s is %i \n", UniformString, a);
-	}
-}
-
-void Shader::SetUniform4F(const char* UniformString, float X, float Y, float Z,float W)
-{
-	glUniform4f(glGetUniformLocation(ShaderID, UniformString), X, Y, Z,W);
-}
-
-void Shader::SetUniform2F(const char* UniformString, float X, float Y)
-{
-	GLuint a = 0;
-	glUniform2f(a = glGetUniformLocation(ShaderID, UniformString),X, Y);
-	if (a == -1)
-	{
-		printf("%s is %i\n", UniformString, a);
-	}
-}
-
-void Shader::SetUniform3F(const char* UniformString, float X, float Y, float z)
-{
-	glUniform3f(glGetUniformLocation(ShaderID, UniformString), X, Y, z);
-}
-
-void Shader::setUniform1F(const char* UniformString, float x)
-{
-	glUniform1f(glGetUniformLocation(ShaderID, UniformString), x);
-}
+#pragma region Shader Functions
 
 void Shader::CreateFromFiles(const char* VertexShaderLoc, const char* FragmentShaderLoc)
 {
@@ -109,26 +69,17 @@ void Shader::CreateFromFiles(const char* VertexShaderLoc, const char* FragmentSh
 	CompileShaders(VertexCode, FragmentCode);
 }
 
-void Shader::CreateFromFiles(const char* CompShaderLoc)
+void Shader::CreateComputeShaderFromFile(const char* CompShaderLoc)
 {
 	std::string CompString = ReadFile(CompShaderLoc);
-
 	const char* CompCode = CompString.c_str();
 
 	CompileShader(CompCode);
 }
 
-void Shader::CreateFromString(const char* VertexString, const char* FragmentString)
-{
-	CompileShaders(VertexString, FragmentString);
-}
-
 void Shader::ClearShader()
 {
-	if (ShaderID != 0)
-	{
-		glDeleteProgram(ShaderID);
-	}
+	if (ShaderID != 0) glDeleteProgram(ShaderID);
 }
 
 std::string Shader::ReadFile(const char* FileLocation)
@@ -154,26 +105,19 @@ std::string Shader::ReadFile(const char* FileLocation)
 
 	return Content;
 }
-
-GLuint Shader::GetUniformLocation(const char* UniformVar)
-{
-	GLuint UniformVarLoc = glGetUniformLocation(ShaderID, UniformVar);
-	//printf("Checking %s Location: %u\n", UniformVar, (unsigned int)UniformVarLoc); //Debug
-	return glGetUniformLocation(ShaderID, UniformVar);
-}
 void Shader::CompileShader(const char* CompCode)
 {
 	ShaderID = glCreateProgram();
 
-	if (!ShaderID)
-	{
+	if (!ShaderID) 
+	{ 
 		printf("Failed to create shader");
-		return;
+		return; 
 	}
 
 	GLuint CompShader = glCreateShader(GL_COMPUTE_SHADER);
 
-	if (0 == CompShader)
+	if (0 == CompShader) 
 	{
 		printf("Failed to initalise Compute shader");
 		return;
@@ -188,13 +132,10 @@ void Shader::CompileShader(const char* CompCode)
 
 	if (result == GL_FALSE)
 	{
-
 		glGetShaderInfoLog(CompShader, 512, NULL, Log);
 		printf("Failed to compile Compute shader: %s\n", Log);
 		return;
 	}
-
-	glCompileShader(CompShader);
 
 	glAttachShader(ShaderID, CompShader);
 	glLinkProgram(ShaderID);
@@ -215,7 +156,7 @@ void Shader::CompileShaders(const char* VertexCode, const char* FragmentCode)
 	ShaderID = glCreateProgram();
 
 	if (!ShaderID)
-	{
+	{ 
 		printf("Failed to create shader");
 		return;
 	}
@@ -237,7 +178,6 @@ void Shader::CompileShaders(const char* VertexCode, const char* FragmentCode)
 
 	if (result == GL_FALSE)
 	{
-
 		glGetShaderInfoLog(VertexShader, 512, NULL, Log);
 		printf("Failed to compile Vert shader: %s\n", Log);
 		return;
@@ -247,8 +187,8 @@ void Shader::CompileShaders(const char* VertexCode, const char* FragmentCode)
 
 	if (0 == FragmentShader)
 	{
-		printf("Failed to create fragmentshader");
-		return;
+		printf("Failed to create fragmentshader"); 
+		return; 
 	}
 
 	glShaderSource(FragmentShader, 1, &FragmentCode, NULL);
@@ -258,14 +198,13 @@ void Shader::CompileShaders(const char* VertexCode, const char* FragmentCode)
 
 	if (result == GL_FALSE)
 	{
-
 		glGetShaderInfoLog(FragmentShader, 512, NULL, Log);
 		printf("Failed to compile FragmentShader: %s\n", Log);
 		return;
-	}
+	}	
 
-	glCompileShader(VertexShader);
-	glCompileShader(FragmentShader);
+	//glCompileShader(VertexShader);
+	//glCompileShader(FragmentShader);
 
 	glAttachShader(ShaderID, VertexShader);
 	glAttachShader(ShaderID, FragmentShader);
@@ -283,3 +222,50 @@ void Shader::CompileShaders(const char* VertexCode, const char* FragmentCode)
 	glDeleteShader(FragmentShader);
 
 }
+
+#pragma endregion
+
+#pragma region Uniform Functions
+void Shader::SetUniformMatrix4F(const char* UniformString, std::vector<GLfloat> Matrixin, bool Transpose)
+{
+	GLuint a = 0;
+	glUniformMatrix4fv(a = glGetUniformLocation(ShaderID, UniformString), 1, Transpose, &(Matrixin[0]));
+	if (a == -1) printf("%s is %i \n", UniformString, a);
+}
+
+void Shader::SetUniformMatrix4F(const char* UniformString, glm::mat4& Matrixin, bool Transpose)
+{
+	GLuint a = 0;
+	glUniformMatrix4fv(a = glGetUniformLocation(ShaderID, UniformString), 1, Transpose, glm::value_ptr(Matrixin));
+	if (a == -1) printf("%s is %i \n", UniformString, a);
+}
+
+void Shader::SetUniform4F(const char* UniformString, float X, float Y, float Z, float W)
+{
+	GLuint a = 0;
+	glUniform4f(a = glGetUniformLocation(ShaderID, UniformString), X, Y, Z, W);
+	if (a == -1)  printf("%s is %i \n", UniformString, a);
+}
+
+void Shader::SetUniform2F(const char* UniformString, float X, float Y)
+{
+	GLuint a = 0;
+	glUniform2f(a = glGetUniformLocation(ShaderID, UniformString), X, Y);
+	if (a == -1) printf("%s is %i \n", UniformString, a);
+}
+
+void Shader::SetUniform3F(const char* UniformString, float X, float Y, float z)
+{
+	GLuint a = 0;
+	glUniform3f(a = glGetUniformLocation(ShaderID, UniformString), X, Y, z);
+	if (a == -1)  printf("%s is %i \n", UniformString, a);
+}
+
+void Shader::setUniform1F(const char* UniformString, float x)
+{
+	GLuint a = 0;
+	glUniform1f(a = glGetUniformLocation(ShaderID, UniformString), x);
+	if (a == -1)  printf("%s is %i \n", UniformString, a);
+}
+
+#pragma endregion
