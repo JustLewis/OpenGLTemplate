@@ -162,6 +162,9 @@
     <ClCompile Include="glad.c" />
     <ClCompile Include="OpenGLToolkit.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Template\Window.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

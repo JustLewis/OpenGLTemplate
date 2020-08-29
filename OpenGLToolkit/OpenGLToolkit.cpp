@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include<glad/glad.h>
+
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp> //not sure we need this.
@@ -29,14 +30,13 @@ int main()
 	glPointSize(1);
 	glEnable(GL_DEPTH_TEST);
 
-	//Debug stuff.
-	glDebugMessageCallback(MessageCallback, 0);
-	//glEnable(GL_DEBUG_OUTPUT); //Uncomment if you want some debugging information
+	//Debug stuff. Uncomment the below 2 functions for debug information
+	//glDebugMessageCallback(MessageCallback, 0);
+	//glEnable(GL_DEBUG_OUTPUT);
 
 	if (TwoDimensions)//Working in 2D
 	{
 		shader.CreateFromFiles("../Template/Shaders/Basic2DShader.vert", "../Template/Shaders/Basic2DShader.frag");
-
 
 		mesh = Mesh();
 		mesh.CreateTriangle();

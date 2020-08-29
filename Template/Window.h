@@ -1,5 +1,5 @@
 #pragma once
-#include <stdio.h>
+#include <iostream>
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
 class Window
@@ -8,51 +8,47 @@ public:
 	Window();
 	Window(GLuint WindowWidthIn, GLuint WindowHeightIn);
 	~Window();
+
 	int Initialise();
 
-	void WindowName(const char* NewName) { glfwSetWindowTitle(MainWindow,NewName); }
+	//Utility
+	void WindowName(const char* NewName) { glfwSetWindowTitle(MainWindow, NewName); }
+	void ShowMousePos();
+	void ShowCursor(bool Show);
 
+	//Getters
 	GLint GetBufferWidth() { return BufferWidth; }
 	GLint GetBufferHeight() { return BufferHeight; }
-	
-	bool* GetKeyIDArray() { return KeyPressed; }
-
+	bool* GetKeyIDArray() { return Keys; }
 	bool GetWindowShouldClose() { return glfwWindowShouldClose(MainWindow); }
 	void SwapBuffers() { glfwSwapBuffers(MainWindow); };
 
-	GLfloat GetMouseXChange();
-	GLfloat GetMouseYChange();
-
 private:
 
+	//Window stuff
 	GLFWwindow *MainWindow;
 	GLuint WindowWidth, WindowHeight;
 	GLint BufferWidth, BufferHeight;
+	
+	//Keys and mouse
+	GLfloat MouseX, MouseY;
+	bool Keys[550] = { false };
 
-	bool KeyPressed[1024];
-
-	GLfloat MouseLastX, MouseLastY, MouseXChange, MouseYChange;
-	bool MouseFirstMoved;
-
+	//GLFW handled functions
 	static void HandleKeys(GLFWwindow* WindowIn, int key, int code, int action, int mode);
 	static void HandleMouse(GLFWwindow* WindowIn, double XPos, double Ypos);
-	void CreateCallbacks();
-
+	static void ErrorCallbackInfo(int error, const char* Description);
 };
-
-
 
 Window::Window()
 {
 	WindowWidth = 400;
 	WindowHeight = 400;
 
-
-	for (size_t i = 0; i < 1024; i++)
+	for (size_t i = 0; i < 549; i++)
 	{
-		KeyPressed[i] = false;
+		Keys[i] = false;
 	}
-
 
 	BufferWidth = 0;
 	BufferHeight = 0;
@@ -63,9 +59,9 @@ Window::Window(GLuint WindowWidthIn, GLuint WindowHeightIn)
 	WindowWidth = WindowWidthIn;
 	WindowHeight = WindowHeightIn;
 
-	for (size_t i = 0; i < 1024; i++)
+	for (size_t i = 0; i < 549; i++)
 	{
-		KeyPressed[i] = false;
+		Keys[i] = false;
 	}
 	BufferWidth = 0;
 	BufferHeight = 0;
@@ -79,20 +75,18 @@ Window::~Window()
 
 int Window::Initialise()
 {
-
 	if (!glfwInit())
 	{
-		printf("Failed to initialise GLFW");
+		std::cout << "Failed to initialise GLFW" << std::endl;
 		glfwTerminate();
 		return 1;
 	}
-
 
 	MainWindow = glfwCreateWindow(WindowWidth, WindowHeight, "OpenGL4.6", nullptr, nullptr);
 
 	if (!MainWindow)
 	{
-		printf("Failed to create window");
+		std::cout << "Failed to create window" << std::endl;
 		glfwDestroyWindow(MainWindow);
 		glfwTerminate();
 	}
@@ -100,14 +94,25 @@ int Window::Initialise()
 	glfwGetFramebufferSize(MainWindow, &BufferWidth, &BufferHeight);
 	glfwMakeContextCurrent(MainWindow);
 
-	CreateCallbacks();
+	glfwSetErrorCallback(ErrorCallbackInfo);
+	glfwSetKeyCallback(MainWindow, HandleKeys);
+	glfwSetCursorPosCallback(MainWindow, HandleMouse);
+
 	glfwSetInputMode(MainWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	glfwSetWindowUserPointer(MainWindow, this);
 
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+	//original load gl function
+	/*if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
-		printf("Failed to initialize GLAD");
+		std::cout << "Failed to initialize GLAD" << std::endl;
+		return 1;
+	}*/
+
+	//alternate load gl function
+	if (!gladLoadGL())
+	{
+		std::cout << "Failed to load glad" << std::endl;
 		return 1;
 	}
 
@@ -125,12 +130,11 @@ int Window::Initialise()
 	printf("GL Version (integer) : %d.%d\n", major, minor);
 	printf("GLSL Version : %s\n\n", glslVersion);
 	/*
-
 	Wolff, David. OpenGL 4 Shading Language Cookbook : Build High-Quality,
 	Real-time 3D Graphics with OpenGL 4. 6, GLSL 4. 6 and C++17, 3rd Edition,
 	Packt Publishing, Limited, 2018.
 	ProQuest Ebook Central, http://ebookcentral.proquest.com/lib/portsmouth-ebooks/detail.action?docID=5532271.
-Created from portsmouth-ebooks on 2019-10-14 11:16:27.
+	Created from portsmouth-ebooks on 2019-10-14 11:16:27.
 	*/
 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, major);
@@ -144,21 +148,22 @@ Created from portsmouth-ebooks on 2019-10-14 11:16:27.
 	return 0;
 }
 
-
-GLfloat Window::GetMouseXChange()
+void Window::ShowMousePos()
 {
-	GLfloat change = MouseXChange;
-	MouseXChange = 0;
-
-	return change;
+	std::cout << "Mouse pos x = " << MouseX;
+	std::cout << " Mouse pos y = " << MouseY << std::endl;
 }
 
-GLfloat Window::GetMouseYChange()
+void Window::ShowCursor(bool Show)
 {
-	GLfloat change = MouseYChange;
-	MouseYChange = 0;
-
-	return change;
+	if(Show)
+	{
+		glfwSetInputMode(MainWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	}
+	else
+	{
+		glfwSetInputMode(MainWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	}
 }
 
 void Window::HandleKeys(GLFWwindow* WindowIn, int key, int code, int action, int mode)
@@ -170,15 +175,15 @@ void Window::HandleKeys(GLFWwindow* WindowIn, int key, int code, int action, int
 		glfwSetWindowShouldClose(WindowIn, GL_TRUE);
 	}
 
-	if (key >= 0 && key <= 1024)
+	if (key >= 0 && key <= 550)
 	{
 		if (action == GLFW_PRESS)
 		{
-			TheWindow->KeyPressed[key] = true;
+			TheWindow->Keys[key] = true;
 		}
 		else if (action == GLFW_RELEASE)
 		{
-			TheWindow->KeyPressed[key] = false;
+			TheWindow->Keys[key] = false;
 		}
 	}
 
@@ -188,7 +193,10 @@ void Window::HandleMouse(GLFWwindow* WindowIn, double XPos, double Ypos)
 {
 	Window* TheWindow = static_cast<Window*>(glfwGetWindowUserPointer(WindowIn));
 
-	if (TheWindow->MouseFirstMoved)
+	TheWindow->MouseX = XPos;
+	TheWindow->MouseY = Ypos;
+
+	/*if (TheWindow->MouseFirstMoved)
 	{
 		TheWindow->MouseLastX = XPos;
 		TheWindow->MouseLastY = Ypos;
@@ -199,12 +207,11 @@ void Window::HandleMouse(GLFWwindow* WindowIn, double XPos, double Ypos)
 	TheWindow->MouseYChange = TheWindow->MouseLastY - Ypos;
 
 	TheWindow->MouseLastX = XPos;
-	TheWindow->MouseLastY = Ypos;
+	TheWindow->MouseLastY = Ypos;*/
 
 }
 
-void Window::CreateCallbacks()
+void Window::ErrorCallbackInfo(int error, const char* Description)
 {
-	glfwSetKeyCallback(MainWindow, HandleKeys);
-	glfwSetCursorPosCallback(MainWindow, HandleMouse);
+	printf("Error is %i, Description = %s", error, Description);
 }
