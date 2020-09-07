@@ -2,6 +2,7 @@
 #include <iostream>
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
+
 class Window
 {
 public:
@@ -15,14 +16,12 @@ public:
 	void WindowName(const char* NewName) { glfwSetWindowTitle(MainWindow, NewName); }
 	void ShowMousePos();
 	void ShowCursor(bool Show);
-
-	//Getters
-	GLint GetBufferWidth() { return BufferWidth; }
-	GLint GetBufferHeight() { return BufferHeight; }
-	bool* GetKeyIDArray() { return Keys; }
-	bool GetWindowShouldClose() { return glfwWindowShouldClose(MainWindow); }
 	void SwapBuffers() { glfwSwapBuffers(MainWindow); };
 
+	//Getters
+	bool* GetKeyIDArray() { return Keys; }
+	bool GetWindowShouldClose() { return glfwWindowShouldClose(MainWindow); }
+	
 private:
 
 	//Window stuff
@@ -32,7 +31,7 @@ private:
 	
 	//Keys and mouse
 	GLfloat MouseX, MouseY;
-	bool Keys[550] = { false };
+	bool Keys[350] = { false };
 
 	//GLFW handled functions
 	static void HandleKeys(GLFWwindow* WindowIn, int key, int code, int action, int mode);
@@ -45,7 +44,7 @@ Window::Window()
 	WindowWidth = 400;
 	WindowHeight = 400;
 
-	for (size_t i = 0; i < 549; i++)
+	for (size_t i = 0; i < 349; i++)
 	{
 		Keys[i] = false;
 	}
@@ -59,7 +58,7 @@ Window::Window(GLuint WindowWidthIn, GLuint WindowHeightIn)
 	WindowWidth = WindowWidthIn;
 	WindowHeight = WindowHeightIn;
 
-	for (size_t i = 0; i < 549; i++)
+	for (size_t i = 0; i < 349; i++)
 	{
 		Keys[i] = false;
 	}
@@ -78,7 +77,6 @@ int Window::Initialise()
 	if (!glfwInit())
 	{
 		std::cout << "Failed to initialise GLFW" << std::endl;
-		glfwTerminate();
 		return 1;
 	}
 
@@ -87,7 +85,6 @@ int Window::Initialise()
 	if (!MainWindow)
 	{
 		std::cout << "Failed to create window" << std::endl;
-		glfwDestroyWindow(MainWindow);
 		glfwTerminate();
 	}
 
@@ -101,6 +98,7 @@ int Window::Initialise()
 	glfwSetInputMode(MainWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	glfwSetWindowUserPointer(MainWindow, this);
+	
 
 	//original load gl function
 	/*if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -175,7 +173,7 @@ void Window::HandleKeys(GLFWwindow* WindowIn, int key, int code, int action, int
 		glfwSetWindowShouldClose(WindowIn, GL_TRUE);
 	}
 
-	if (key >= 0 && key <= 550)
+	if (key >= 0 && key <= 349)
 	{
 		if (action == GLFW_PRESS)
 		{

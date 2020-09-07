@@ -71,38 +71,38 @@ void Mesh::CreateMesh(GLfloat* Vertices, GLuint* Indices, GLuint NumberOfVerts, 
 
 	NumberOfIndices = NumberOfIndicesIn;
 	glGenVertexArrays(1, &VAO);
-	GLuint VBO;
-	GLuint IBO;
+	GLuint VertexBufferDataObject;
+	GLuint IndexBufferDataObject;
 	
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &IBO);
+	glGenBuffers(1, &VertexBufferDataObject);
+	glGenBuffers(1, &IndexBufferDataObject);
 
 	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, VertexBufferDataObject);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertices[0]) * NumberOfVerts, Vertices, GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IndexBufferDataObject);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Indices[0]) * NumberOfIndices, Indices, GL_STATIC_DRAW);
 
 
-	/*glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertices[0]) * 6, 0);
+	/*glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertices[0]) * 6, 0); //Leaving this as sizeof(Vertices[0]) for old tutorials.
 	glEnableVertexAttribArray(0);
 
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertices[0]) * 6, (void*)(sizeof(Vertices[0]) * 3));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertices[0]) * 6, (void*)(sizeof(Vertices[0]) * 3)); //Leaving this as sizeof(Vertices[0]) for old tutorials.
 	glEnableVertexAttribArray(1);*/
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertices[0]) * 5, 0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 5, 0); //Changed to sizeof GLfloat because it makes more sense.
 	glEnableVertexAttribArray(0);
 
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertices[0]) * 5, (void*)(sizeof(Vertices[0]) * 3));
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 5, (void*)(sizeof(GLfloat) * 3)); //Changed to sizeof GLfloat because it makes more sense.
 	glEnableVertexAttribArray(1);
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);			//Even though the VAO is no longer active, These buffers still need to be unbound as they are still active.
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);	//Even though the VAO is no longer active, These buffers still need to be unbound as they are still active.
 
-	glDeleteBuffers(1, &VBO);
-	glDeleteBuffers(1, &IBO);
+	glDeleteBuffers(1, &VertexBufferDataObject);
+	glDeleteBuffers(1, &IndexBufferDataObject);
 }
 
 void Mesh::CreateProceduralSphere(GLfloat RadiusIn, GLuint HfacesIn, GLuint VfacesIn)

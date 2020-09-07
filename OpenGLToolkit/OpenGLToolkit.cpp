@@ -49,7 +49,7 @@ int main()
 
 			shader.UseShader();
 			shader.SetUniform4F("ObjColour", 0.0f,0.0f, 1.0f, 1.0f);
-
+			
 			mesh.RenderMesh();
 
 			window.SwapBuffers();
