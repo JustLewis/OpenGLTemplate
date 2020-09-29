@@ -37,6 +37,7 @@ int main()
 	GLfloat Posx = 0.0f, Posy = 0.0f;
 
 	glPointSize(1);
+
 	//glEnable(GL_DEPTH_TEST);
 	
 	shader.CreateFromFiles("Shader/2DShader.vert", "Shader/2DShader.frag");
