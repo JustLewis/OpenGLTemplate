@@ -32,7 +32,7 @@ int main()
 	CompShader.UseShader();
 
 	ComputeParticles Party;
-	Party.CreateParticles(1000000); //1 million. (Maximum is 25 million before crashing.)
+	Party.CreateParticles(1000000);
 
 	GLfloat Posx = 0.0f, Posy = 0.0f;
 

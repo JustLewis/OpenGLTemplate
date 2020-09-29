@@ -21,10 +21,6 @@ public:
 	//Getters
 	bool* GetKeyIDArray() { return Keys; }
 	bool GetWindowShouldClose() { return glfwWindowShouldClose(MainWindow); }
-	//Getter functions
-	float GetMouseXChange();
-	float GetMouseYChange();
-
 	
 private:
 
@@ -35,7 +31,6 @@ private:
 	
 	//Keys and mouse
 	GLfloat MouseX, MouseY;
-	GLfloat MouseXLast, MouseYLast;
 	bool Keys[350] = { false };
 
 	//GLFW handled functions
@@ -91,7 +86,6 @@ int Window::Initialise()
 	{
 		std::cout << "Failed to create window" << std::endl;
 		glfwTerminate();
-		return 1;
 	}
 
 	glfwGetFramebufferSize(MainWindow, &BufferWidth, &BufferHeight);
@@ -156,20 +150,6 @@ void Window::ShowMousePos()
 {
 	std::cout << "Mouse pos x = " << MouseX;
 	std::cout << " Mouse pos y = " << MouseY << std::endl;
-}
-
-float Window::GetMouseXChange()
-{
-	float ret = MouseX - MouseXLast;
-	MouseXLast = MouseX;
-	return ret;
-}
-
-float Window::GetMouseYChange()
-{
-	float ret = MouseYLast - MouseY;
-	MouseYLast = MouseY;
-	return ret;
 }
 
 void Window::ShowCursor(bool Show)
