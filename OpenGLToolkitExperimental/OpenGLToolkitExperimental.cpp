@@ -32,7 +32,7 @@ int main()
 	CompShader.UseShader();
 
 	ComputeParticles Party;
-	Party.CreateParticles(1000000);
+	Party.CreateParticles(1000000); //1 million particles
 
 	GLfloat Posx = 0.0f, Posy = 0.0f;
 
@@ -42,14 +42,17 @@ int main()
 	
 	shader.CreateFromFiles("Shader/2DShader.vert", "Shader/2DShader.frag");
 
+	float Tempx = window.GetMouseX();
+	float Tempy = window.GetMouseY();
+
 	while (!window.GetWindowShouldClose())
 	{
 		glfwPollEvents();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(0.01f, 0.0f, 0.02f, 1.0f);
 
-		Posx += window.GetMouseXChange() * 0.001;
-		Posy += window.GetMouseYChange() * 0.001;
+		Posx += (Tempx - window.GetMouseX()) * 0.001;
+		Posy += (window.GetMouseY() - Tempy) * 0.001;
 
 		if (Posx < -1.0f) { Posx = 1.0f; }
 		if (Posy < -1.0f) { Posy = 1.0f; }
@@ -58,10 +61,13 @@ int main()
 		CompShader.UseShader();
 		CompShader.SetUniform2F("MousePosition", Posx, Posy);
 
+		Tempx = window.GetMouseX();
+		Tempy = window.GetMouseY();
+
 		Party.Dispatch();
 
 		shader.UseShader();
-		shader.SetUniform4F("ObjColour", 0.990f, 0.9910f, 0.9910f, 0.10f);
+		shader.SetUniform4F("ObjColour", 0.990f, 0.8910f, 0.9910f, 0.05f);
 
 		//mesh.RenderMesh();
 		Party.Render();

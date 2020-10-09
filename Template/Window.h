@@ -21,6 +21,8 @@ public:
 	//Getters
 	bool* GetKeyIDArray() { return Keys; }
 	bool GetWindowShouldClose() { return glfwWindowShouldClose(MainWindow); }
+	float GetMouseX() { return MouseX; }
+	float GetMouseY() { return MouseY; }
 	
 private:
 
