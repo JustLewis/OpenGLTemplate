@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{77e8183b-1f4f-4f28-80a3-2f9a1bc5212b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="OpenGLToolkit.cpp">
@@ -21,5 +24,27 @@
     <ClCompile Include="glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ComputeTexture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ComputeTexture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\Shader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\Shader.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\Spline1.gl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\Spline2.gl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

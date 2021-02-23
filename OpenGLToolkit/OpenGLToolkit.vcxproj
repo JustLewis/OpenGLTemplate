@@ -159,8 +159,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ComputeTexture.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="OpenGLToolkit.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ComputeTexture.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\Spline1.gl" />
+    <None Include="Shaders\Shader.frag" />
+    <None Include="Shaders\Shader.vert" />
+    <None Include="Shaders\Spline2.gl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

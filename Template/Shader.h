@@ -27,9 +27,13 @@ public:
 	void SetUniform2F(const char* UniformString, float X, float Y);
 	void SetUniform3F(const char* UniformString, float X, float Y, float z);
 	void SetUniform4F(const char* UniformString, float X, float Y, float Z, float W);
-
+	//matrices
 	void SetUniformMatrix4F(const char* UniformString, std::vector<GLfloat> Matrixin, bool Transpose);
 	void SetUniformMatrix4F(const char* UniformString, glm::mat4 &Matrixin, bool Transpose);
+	//stack of vectors
+	void SetUniform3FV(const char* UniformString, std::vector<GLfloat> Vectors, int VectorCount);
+
+	void SetUniform1I(const char* UniformString, GLint x);
 
 	//Comp shader experimental
 	void CreateComputeShaderFromFile(const char* CompShaderLoc);
@@ -240,6 +244,13 @@ void Shader::SetUniformMatrix4F(const char* UniformString, glm::mat4& Matrixin, 
 	if (a == -1) printf("%s is %i \n", UniformString, a);
 }
 
+void Shader::SetUniform3FV(const char* UniformString, std::vector<GLfloat> Vectors, int VectorCount)
+{
+	GLuint a = 0;
+	glUniform3fv(a = glGetUniformLocation(ShaderID, UniformString), VectorCount,Vectors.data());
+	if (a == -1) printf("%s is %i \n", UniformString, a);
+}
+
 void Shader::SetUniform4F(const char* UniformString, float X, float Y, float Z, float W)
 {
 	GLuint a = 0;
@@ -266,6 +277,13 @@ void Shader::setUniform1F(const char* UniformString, float x)
 	GLuint a = 0;
 	glUniform1f(a = glGetUniformLocation(ShaderID, UniformString), x);
 	if (a == -1)  printf("%s is %i \n", UniformString, a);
+}
+
+void Shader::SetUniform1I(const char* UniformString, GLint x)
+{
+	GLuint a = 0;
+	glUniform1i(a = glGetUniformLocation(ShaderID, UniformString), x);
+	if (a == -1) printf("%s is %i \n", UniformString, a);
 }
 
 #pragma endregion

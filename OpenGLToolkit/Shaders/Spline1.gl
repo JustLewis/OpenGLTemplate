@@ -1,0 +1,70 @@
+#version 460 core
+
+layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+layout (binding = 0,rgba8) uniform image2D img_output;
+
+uniform vec3 PosA;
+uniform vec3 PosB;
+uniform vec3 PosC;
+uniform vec3 PosD;
+
+float BezierLine(float t, float wa,float wb, float wc,float wd)
+{
+
+float tt = t * t;
+float ttt = tt * t;
+float mt = 1.0 - t;
+float mtt = mt * mt;
+float mttt = mtt * mt;
+
+return wa * mttt + 3 * wb * mtt * t + 3 * wc * mtt * tt + wd * ttt;
+
+}
+
+float  BezierLineB(float t, float pa, float pb)
+{
+	float diff = pb - pa;
+	return pow(pa + (diff * t),2);
+}
+
+void main()
+{
+vec4 Colour = vec4(1.0f,0.0,0.0,1.0);
+float X = (1.0 / 4000.0) * float(gl_GlobalInvocationID.x);
+float Y = (1.0 / 4000.0) * float(gl_GlobalInvocationID.y);
+
+float xa = BezierLineB(X, PosA.x,PosB.x);
+float ya = BezierLineB(Y, PosA.y,PosB.y);
+float xb = BezierLineB(X, PosB.x,PosC.x);
+float yb = BezierLineB(Y, PosB.y,PosC.y);
+
+float x = BezierLineB(X,xa,xb);
+float y = BezierLineB(X,ya,yb);
+
+Colour.x = x * y;
+//Colour.y = y;
+
+imageStore (img_output, ivec2(gl_GlobalInvocationID.xy), Colour);
+
+}
+
+/*
+void main()
+{
+
+vec4 Colour = vec4(1.0f,0.0,0.0,1.0);
+float X = (1.0 / 4000.0) * float(gl_GlobalInvocationID.x);
+float Y = (1.0 / 4000.0) * float(gl_GlobalInvocationID.y);
+
+vec2 Spline;
+Spline.x = BezierLine(Y,PosA.x,PosB.x,PosC.x,PosD.x);
+Spline.y = BezierLine(Y,PosA.y,PosB.y,PosC.y,PosD.y);
+
+//Colour = vec4(SplinePoints[3],1.0);
+Colour.rb = Spline;
+
+imageStore (img_output, ivec2(gl_GlobalInvocationID.xy), Colour);
+
+}
+
+*/
