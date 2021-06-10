@@ -1,3 +1,5 @@
+This is an old template. I need to look at this again really to see if I want it.
+
 "# OpenGLTemplate" 
 Make sure it's in x86, It'll likely start in x64, can find this at the top.
 Right click the project, go to settings
