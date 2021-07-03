@@ -1,4 +1,4 @@
-This is an old template. I need to look at this again really to see if I want it.
+This is the actual template for the youtube tutorials. If you are interested - https://www.youtube.com/user/thecushion04.
 
 "# OpenGLTemplate" 
 Make sure it's in x86, It'll likely start in x64, can find this at the top.
