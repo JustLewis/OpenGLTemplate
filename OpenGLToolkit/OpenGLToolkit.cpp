@@ -35,11 +35,19 @@ void PlayerInput(); //updates Posb and Posc values with controls (WASD and Arrow
 float BezForShader(float t, float wa, float wb, float wc, float wd); //Bezier Algorythm for 2 control points 
 void SplineOneAttempt(); //uses compute shader
 void SplineTwoAttempt(); //uses compute shader
-void Remake(float t,GLuint BufferIn); //Remake buffer containing line (Not compute shader
+void Remake(float t,GLuint LineBufferIn,GLuint PointBufferIn); //Remake buffer containing line (Not compute shader
 
 bool RemakeBuffer = true;
 
+//Points to make the line (the line itself really)
 std::vector<GLfloat> Points;
+
+//Control points of the line
+std::vector<GLfloat> ControlPoints;
+
+//Graphics Objects
+GLuint LineBuffer, LineAO;
+GLuint PointBuffer, PointAO;
 
 int main()
 {
@@ -48,42 +56,70 @@ int main()
 	window.Initialise();
 
 	//glEnable(GL_DEPTH_TEST); //no need for this working in 2D
-
-	//Debug stuff. Uncomment the below 2 functions for debug information
-	//glDebugMessageCallback(MessageCallback, 0);
-	//glEnable(GL_DEBUG_OUTPUT);
-		
-
-
-
-	//SplineOneAttempt();
-	//SplineTwoAttempt();
+	glEnable(GL_POINT_SIZE);
+	glPointSize(15);
 	
-	//attempt3
+	//glEnable(GL_DEBUG_OUTPUT);
+
 	//Make array
 	int NumberOfPoints = 100;
 	float t = 1.0f / NumberOfPoints;
 
-	Posa.x = -0.8f;
-	Posa.y = 0.80f;
-	Posd.x = 0.8f;
-	Posd.y = -0.80f;
+	float Length = 1.0f; // div by 2
+	Posa.x = -Length;
+	Posa.y = -Length;
+	Posb.x = -0.40;
+	Posb.y = -0.70f;
+	Posc.x = -Posb.x; // 0.40f;
+	Posc.y = -Posb.y; // 0.70f;
+	Posd.x = Length;
+	Posd.y = Length;
+
+	ControlPoints.push_back(Posa.x);
+	ControlPoints.push_back(Posa.y);
+
+	ControlPoints.push_back(Posb.x);
+	ControlPoints.push_back(Posb.y);
+
+	ControlPoints.push_back(Posc.x);
+	ControlPoints.push_back(Posc.y);
+
+	ControlPoints.push_back(Posd.x);
+	ControlPoints.push_back(Posd.y);
 
 
-
-	//Create buffers for lines
-	GLuint LineBuffer,VAO;
-	glGenVertexArrays(1, &VAO);
+	glGenVertexArrays(1, &LineAO);
 	glGenBuffers(1, &LineBuffer);
-	glBindVertexArray(VAO);
-
-	Remake(t, LineBuffer); //filles buffer on cpu
-
-	//pass buffer to GPU for drawing
+	glBindVertexArray(LineAO);
 	glBindBuffer(GL_ARRAY_BUFFER, LineBuffer);
 	glBufferData(GL_ARRAY_BUFFER, Points.size() * sizeof(GLfloat), Points.data(), GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0); //Enable vertex attrivute 0
+	//glBindVertexArray(LineAO);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	//glDeleteBuffers(1, &LineBuffer);
+
+	glGenVertexArrays(1,&PointAO);
+	glGenBuffers(1, &PointBuffer);
+	glBindVertexArray(PointAO);
+	glBindBuffer(GL_ARRAY_BUFFER, PointBuffer);
+	glBindVertexArray(PointAO);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBufferData(GL_ARRAY_BUFFER, ControlPoints.size() * sizeof(GLfloat), ControlPoints.data(), GL_STATIC_DRAW);
+
+	//glDeleteBuffers(1, &PointBuffer);
+
+	Remake(t, LineBuffer,PointBuffer); //filles buffer on cpu
+
+	//pass buffer to GPU for drawing
+	//glBindBuffer(GL_ARRAY_BUFFER, LineBuffer);
+	//glBufferData(GL_ARRAY_BUFFER, Points.size() * sizeof(GLfloat), Points.data(), GL_STATIC_DRAW);
 
 	//set vertex attributes (x and y position)
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0); //Enable vertex attrivute 0
+
+	glBindVertexArray(PointAO);
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(0); //Enable vertex attrivute 0
 
@@ -96,7 +132,7 @@ int main()
 	{
 		if (RemakeBuffer)
 		{
-			Remake(t,LineBuffer);
+			Remake(t,LineBuffer,PointBuffer);
 		}
 		PlayerInput(); //get player input
 		glfwPollEvents(); //update player input
@@ -104,8 +140,12 @@ int main()
 		glClearColor(0.01f, 0.1f, 0.02f, 1.0f); //set backgroun colour
 
 		shader.UseShader(); //use this shader
-		glBindVertexArray(VAO); //bind object to draw (Lines in this case)
+		glBindVertexArray(LineAO); //bind object to draw (Lines in this case)
+		glBindBuffer(GL_ARRAY_BUFFER,LineBuffer);
 		glDrawArrays(GL_LINE_STRIP, 0, NumberOfPoints);
+
+		glBindVertexArray(PointAO);
+		glDrawArrays(GL_POINTS, 0, 4);
 
 
 		window.SwapBuffers();
@@ -115,10 +155,11 @@ int main()
 	//draw lines
 }
 
-void Remake(float t,GLuint BufferIn)
+void Remake(float t,GLuint LineBufferIn,GLuint PointBufferIn)
 {
 	if (RemakeBuffer)
 	{
+		glBindVertexArray(LineAO);
 		Points.clear(); //clear the vector
 		for (size_t i = 0; i < 100; i++) //100 points along line
 		{
@@ -126,9 +167,36 @@ void Remake(float t,GLuint BufferIn)
 			Points.push_back(BezForShader(t * i, Posa.y, Posb.y, Posc.y, Posd.y));
 		}
 		RemakeBuffer = false; //reset remake buffer
-		glBindBuffer(GL_ARRAY_BUFFER, BufferIn);
+		glBindBuffer(GL_ARRAY_BUFFER, LineBufferIn);
 		glBufferData(GL_ARRAY_BUFFER, Points.size() * sizeof(GLfloat), Points.data(), GL_DYNAMIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindVertexArray(0);
+		
+		Posc = -Posb;
+
+		ControlPoints[0] = Posa.x;
+		ControlPoints[1] = Posa.y;
+		ControlPoints[2] = Posb.x;
+		ControlPoints[3] = Posb.y;
+		ControlPoints[4] = Posc.x;
+		ControlPoints[5] = Posc.y;
+		ControlPoints[6] = Posd.x;
+		ControlPoints[7] = Posd.y;
+		
+		glBindVertexArray(PointAO);
+		glBindBuffer(GL_ARRAY_BUFFER, PointBufferIn);
+		glBufferData(GL_ARRAY_BUFFER, ControlPoints.size() * sizeof(GLfloat), ControlPoints.data(), GL_DYNAMIC_DRAW);
 	}
+}
+
+void PrintValues()
+{
+	std::cout << "Pos A = " << Posa.x << ", " << Posa.y << std::endl;
+	std::cout << "Pos B = " << Posb.x << ", " << Posb.y << std::endl;
+	std::cout << "Negative Pos B = " << -Posb.x << ", " << -Posb.y << std::endl;
+	//std::cout << "Pos C = " << Posc.x << ", " << Posc.y << std::endl;
+	std::cout << "Pos D = " << Posd.x << ", " << Posd.y << std::endl;
+	std::cout << std::endl;
 }
 
 float BezForShader(float t, float wa, float wb, float wc, float wd)
@@ -151,7 +219,6 @@ void SplineOneAttempt()
 		1.0f,-1.0f,0.0f,	1.0f,0.0f, //Botom right
 		-1.0f,1.0f,0.0f,	0.0f,1.0f, //Top Left
 		1.0f,1.0f,0.0f,		1.0f,1.0f, //Top Left
-
 	};
 
 	//Indices for polygon (for compute shader)
@@ -321,7 +388,10 @@ void PlayerInput()
 		RemakeBuffer = true;
 	}
 
-
+	if (window.GetKeyIDArray()[GLFW_KEY_P])
+	{
+		PrintValues();
+	}
 
 }
 void GLAPIENTRY MessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
