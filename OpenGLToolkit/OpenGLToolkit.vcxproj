@@ -167,6 +167,8 @@
     <ClInclude Include="ComputeTexture.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Shaders\Basic2DShader.frag" />
+    <None Include="Shaders\Basic2DShader.vert" />
     <None Include="Shaders\Spline1.gl" />
     <None Include="Shaders\Shader.frag" />
     <None Include="Shaders\Shader.vert" />

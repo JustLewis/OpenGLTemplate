@@ -23,6 +23,7 @@ public:
 	bool GetWindowShouldClose() { return glfwWindowShouldClose(MainWindow); }
 	float GetMouseX() { return MouseX; }
 	float GetMouseY() { return MouseY; }
+	double GetMouseScroll() { return Scroll; }
 	
 private:
 
@@ -33,12 +34,14 @@ private:
 	
 	//Keys and mouse
 	GLfloat MouseX, MouseY;
+	GLdouble Scroll;
 	bool Keys[350] = { false };
 
 	//GLFW handled functions
 	static void HandleKeys(GLFWwindow* WindowIn, int key, int code, int action, int mode);
 	static void HandleMouse(GLFWwindow* WindowIn, double XPos, double Ypos);
 	static void ErrorCallbackInfo(int error, const char* Description);
+	static void HandleScroll(GLFWwindow* WindowIn, double xoffset, double yoffset);
 };
 
 Window::Window()
@@ -50,6 +53,9 @@ Window::Window()
 	{
 		Keys[i] = false;
 	}
+	MouseX = 0.0f;
+	MouseY = 0.0f;
+	Scroll = 0.0f;
 
 	BufferWidth = 0;
 	BufferHeight = 0;
@@ -96,7 +102,7 @@ int Window::Initialise()
 	glfwSetErrorCallback(ErrorCallbackInfo);
 	glfwSetKeyCallback(MainWindow, HandleKeys);
 	glfwSetCursorPosCallback(MainWindow, HandleMouse);
-
+	glfwSetScrollCallback(MainWindow, HandleScroll);
 	//glfwSetInputMode(MainWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	glfwSetWindowUserPointer(MainWindow, this);
@@ -214,4 +220,10 @@ void Window::HandleMouse(GLFWwindow* WindowIn, double XPos, double Ypos)
 void Window::ErrorCallbackInfo(int error, const char* Description)
 {
 	printf("Error is %i, Description = %s", error, Description);
+}
+
+void Window::HandleScroll(GLFWwindow* WindowIn, double xoffset, double yoffset)
+{
+	Window* TheWindow = static_cast<Window*>(glfwGetWindowUserPointer(WindowIn));
+	TheWindow->Scroll = yoffset;
 }

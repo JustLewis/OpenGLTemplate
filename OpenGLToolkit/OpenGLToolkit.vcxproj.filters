@@ -46,5 +46,11 @@
     <None Include="Shaders\Spline2.gl">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="Shaders\Basic2DShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\Basic2DShader.vert">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

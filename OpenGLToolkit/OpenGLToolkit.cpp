@@ -27,6 +27,7 @@ glm::vec2 Posd; //ENd
 //texture dimensions for compute shader to render to. 
 GLuint TexWidth = 400;
 GLuint TexHeight = 400;
+GLdouble Scale = 1.0f;
 
 //From Kronos - Debugging function protype. (Full function below main)
 void GLAPIENTRY MessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam);
@@ -54,7 +55,7 @@ int main()
 	window = Window(1920, 1000);
 	//window = Window(1920*2, 1080*2); //4k
 	window.Initialise();
-	
+	//ScrollVal = window.GetMouseScroll();
 
 	//glEnable(GL_DEPTH_TEST); //no need for this working in 2D
 	glEnable(GL_POINT_SIZE);
@@ -66,7 +67,8 @@ int main()
 	int NumberOfPoints = 100;
 	float t = 1.0f / NumberOfPoints;
 
-	float Length = 1.0f; // div by 2
+	//Old Testing
+	float Length = 200.0f; // div by 2
 	Posa.x = -Length;
 	Posa.y = -Length;
 	Posb.x = 0.649f;
@@ -136,6 +138,8 @@ int main()
 		{
 			Remake(t,LineBuffer,PointBuffer);
 		}
+
+		shader.setUniform1F("Scale", Scale);
 		PlayerInput(); //get player input
 		glfwPollEvents(); //update player input
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //clear the frame buffer
@@ -396,7 +400,15 @@ void PlayerInput()
 	{
 		PrintValues();
 	}
-
+	
+	if (window.GetKeyIDArray()[GLFW_KEY_KP_ADD])
+	{
+		Scale *= 1.10f;
+	}
+	if (window.GetKeyIDArray()[GLFW_KEY_KP_SUBTRACT])
+	{
+		Scale *= 0.9f;
+	}
 }
 void GLAPIENTRY MessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
 {
