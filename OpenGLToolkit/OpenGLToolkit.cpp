@@ -51,9 +51,10 @@ GLuint PointBuffer, PointAO;
 
 int main()
 {
-	window = Window(1920, 1080);
+	window = Window(1920, 1000);
 	//window = Window(1920*2, 1080*2); //4k
 	window.Initialise();
+	
 
 	//glEnable(GL_DEPTH_TEST); //no need for this working in 2D
 	glEnable(GL_POINT_SIZE);
@@ -68,10 +69,11 @@ int main()
 	float Length = 1.0f; // div by 2
 	Posa.x = -Length;
 	Posa.y = -Length;
-	Posb.x = -0.40;
-	Posb.y = -0.70f;
-	Posc.x = -Posb.x; // 0.40f;
-	Posc.y = -Posb.y; // 0.70f;
+	Posb.x = 0.649f;
+	Posb.y = -0.824;
+	//Posc.x = 0.40f;
+	//Posc.y = 0.70f;
+	Posc = -Posb; // Easy Symetry.
 	Posd.x = Length;
 	Posd.y = Length;
 
@@ -159,6 +161,10 @@ void Remake(float t,GLuint LineBufferIn,GLuint PointBufferIn)
 {
 	if (RemakeBuffer)
 	{
+		// Align symetry
+		Posc = -Posb;
+
+
 		glBindVertexArray(LineAO);
 		Points.clear(); //clear the vector
 		for (size_t i = 0; i < 100; i++) //100 points along line
@@ -172,8 +178,6 @@ void Remake(float t,GLuint LineBufferIn,GLuint PointBufferIn)
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
 		
-		Posc = -Posb;
-
 		ControlPoints[0] = Posa.x;
 		ControlPoints[1] = Posa.y;
 		ControlPoints[2] = Posb.x;
@@ -343,7 +347,7 @@ void PlayerInput()
 {
 	float Power = .510f;
 
-	if (window.GetKeyIDArray()[GLFW_KEY_W])
+	/*if (window.GetKeyIDArray()[GLFW_KEY_W])
 	{
 		Posc.y += 0.1 * Power;
 		RemakeBuffer = true;
@@ -363,7 +367,7 @@ void PlayerInput()
 	{
 		Posc.x -= 0.1 * Power;
 		RemakeBuffer = true;
-	}
+	}*/
 
 
 	if (window.GetKeyIDArray()[GLFW_KEY_UP])

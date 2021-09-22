@@ -97,7 +97,7 @@ int Window::Initialise()
 	glfwSetKeyCallback(MainWindow, HandleKeys);
 	glfwSetCursorPosCallback(MainWindow, HandleMouse);
 
-	glfwSetInputMode(MainWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	//glfwSetInputMode(MainWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	glfwSetWindowUserPointer(MainWindow, this);
 	
