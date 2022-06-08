@@ -27,16 +27,23 @@ int main()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glBlendColor(0.4, 0.4, 0.0, 0.3);
 
+	///Check maximum number of compute workgroups available on active GPU.
+	GLint NumberOfWorkGroupsAvailable = -1;
+	glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 0, &NumberOfWorkGroupsAvailable);
+	//Print information to console.
+	std::cout << "NumberOfWorkGroupsAvailable = " << NumberOfWorkGroupsAvailable << std::endl;
+
 	Shader CompShader;
 	CompShader.CreateComputeShaderFromFile("Shader/ParticleComputeShader.glsl");
 	CompShader.UseShader();
 
 	ComputeParticles Party;
-	Party.CreateParticles(1000000); //1 million particles
+	//Party.CreateParticles(1000000); //1 million particles
+	Party.CreateParticles(5000); //5 thousand particles
 
 	GLfloat Posx = 0.0f, Posy = 0.0f;
 
-	glPointSize(1);
+	glPointSize(6);
 
 	//glEnable(GL_DEPTH_TEST);
 	
