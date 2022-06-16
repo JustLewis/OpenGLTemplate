@@ -11,7 +11,7 @@
 #include "../Template/Shader.h"
 #include "../Template/Mesh.h"
 
-#define TwoDimensions true; //False for 3D.
+#define TwoDimensions false; //False for 3D.
 
 Window window;
 Shader shader;
@@ -30,8 +30,8 @@ int main()
 	glEnable(GL_DEPTH_TEST);
 
 	//Debug stuff. Uncomment the below 2 functions for debug information
-	//glDebugMessageCallback(MessageCallback, 0);
-	//glEnable(GL_DEBUG_OUTPUT);
+	glDebugMessageCallback(MessageCallback, 0);
+	glEnable(GL_DEBUG_OUTPUT);
 
 #if TwoDimensions
 	shader.CreateFromFiles("../Template/Shaders/Basic2DShader.vert", "../Template/Shaders/Basic2DShader.frag");
@@ -51,6 +51,41 @@ int main()
 	mesh = Mesh();
 	mesh.CreateTriangle();
 
+	GLfloat Verts[] =
+	{//  x    y    z		u    v
+		-0.5f,0.0f,0.0f,	0.0f,0.0f,
+		0.5f,0.0f,0.0f,		1.0f,0.0f,
+		0.0f,0.5f,0.0f,		0.5f,1.0f
+	};
+
+	GLuint Inds[] =
+	{
+		0,1,2
+	};
+
+	GLuint VAO = 0;
+
+	glGenVertexArrays(1, &VAO);
+	GLuint VertexBufferDataObject;
+	GLuint IndexBufferDataObject;
+
+	glGenBuffers(1, &VertexBufferDataObject);
+	glGenBuffers(1, &IndexBufferDataObject);
+
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VertexBufferDataObject);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(Verts[0]) * 15, Verts, GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IndexBufferDataObject);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Inds[0]) * 3, Inds, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 5, 0); //Changed to sizeof GLfloat because it makes more sense.
+	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 5, (void*)(sizeof(GLfloat) * 3)); //Changed to sizeof GLfloat because it makes more sense.
+	glEnableVertexAttribArray(1);
+
+	
 	while (!window.GetWindowShouldClose())
 	{
 		glfwPollEvents();
@@ -59,11 +94,17 @@ int main()
 		shader.UseShader();
 		shader.SetUniform4F("ObjColour", 0.0f, 0.0f, 1.0f, 1.0f);
 
-		mesh.RenderMesh();
+		glBindVertexArray(VAO);
+		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 
 		window.SwapBuffers();
+		glDisable(GL_DEBUG_OUTPUT);
 	}
 
+	glDeleteBuffers(1, &VertexBufferDataObject);
+	glDeleteBuffers(1, &IndexBufferDataObject);
+	glBindVertexArray(0);
+	
 }
 
 void GLAPIENTRY MessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
