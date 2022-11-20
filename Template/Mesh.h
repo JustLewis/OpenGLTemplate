@@ -21,14 +21,15 @@ public:
 	virtual void RenderMesh();
 	virtual void RenderPoints();
 
+	static const GLfloat ToRadians(float ValueIn);
+
 protected:
 	GLuint VAO;
 	GLuint NumberOfIndices;
 
-private:
-	GLfloat ToRadians(float ValueIn);
 	std::vector<GLfloat> Verts;
 	std::vector<GLuint> Inds;
+	
 };
 
 Mesh::Mesh()
@@ -204,7 +205,7 @@ void Mesh::RenderPoints()
 	glBindVertexArray(0);
 }
 
-GLfloat Mesh::ToRadians(float ValueIn)
+const GLfloat Mesh::ToRadians(float ValueIn)
 {
 	return ValueIn * (3.14159265359f / 180.0f);
 }
